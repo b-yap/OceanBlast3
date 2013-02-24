@@ -93,7 +93,13 @@ public class GameScene implements ISceneCreator  {
 		this.mActivity = activity;
 		this.mCamera =camera;
 		this.analogControl = new AnalogControls(activity,camera);
-		this.analogControl.loadAnalogControlResources();
+			
+	}
+	
+	@Override
+	public void loadResources() {
+		// TODO Auto-generated method stub
+this.analogControl.loadAnalogControlResources();
 		
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 		
@@ -146,9 +152,8 @@ public class GameScene implements ISceneCreator  {
 				} catch (TextureAtlasBuilderException e) {
 					Debug.e(e);
 				}
-				
-		
 	}
+
 	
 	public void createScene(SceneManager sceneManager) {
 		//adjustment	
@@ -156,7 +161,6 @@ public class GameScene implements ISceneCreator  {
 		final int centerY=(ConstantsList.CAMERA_HEIGHT - playerAtlas.getHeight())/2;	
 		this.vertextBufferObjectManager = mActivity.getVertexBufferObjectManager();
 		this.manager = sceneManager;
-		
 		
 		 //background
 		 final AutoParallaxBackground autoParallaxBackground = new AutoParallaxBackground(0, 0, 0, 5);
@@ -217,8 +221,6 @@ public class GameScene implements ISceneCreator  {
 				if(userPlayer.collidesWith(goldfish)) {
 					Log.d("gameOver!", " ");
 				}else{}
-				
-				
 				if(!mCamera.isRectangularShapeVisible(userPlayer)) {
 					//nothing
 				}
@@ -226,6 +228,7 @@ public class GameScene implements ISceneCreator  {
 		});
 	}
 
+	
 	public Scene getScene() {
 		mScene.setChildScene(this.analogControl.getAnalogControl());	
 		return this.mScene;
@@ -308,6 +311,7 @@ public class GameScene implements ISceneCreator  {
 		mScene.attachChild(fire);
 		mScene.setTouchAreaBindingOnActionDownEnabled(true);
 	}
+
 
 	
 }

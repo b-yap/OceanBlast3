@@ -15,7 +15,8 @@ import org.andengine.entity.scene.Scene;
 import school.project.oceanblast3.SceneManager;
 
 public interface ISceneCreator {
-	
+
+	public void loadResources();
 	public void createScene(SceneManager sceneManager);
 	public Scene getScene();
 

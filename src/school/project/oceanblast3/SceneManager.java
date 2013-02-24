@@ -45,15 +45,18 @@ public class SceneManager implements ILoaderObserver {
 		this.mEngine = engine;
 		this.mCamera = camera;
 		this.mainActivity = activity;
+		menuScreen = new MenuScene(mainActivity);
+		gameScreen = new GameScene(mainActivity, this.mCamera);
+		pauseScreen = new PauseScene(mainActivity, this.mCamera, this.mEngine);	
 		this.scoreObserver = new ScoreObserver(mainActivity);
 		registerObserver(this.scoreObserver);		
 	}
 
 	//Method loads all of the resources for the game scenes
 	public void loadGameSceneResources() {
-		menuScreen = new MenuScene(mainActivity);
-		gameScreen = new GameScene(mainActivity, this.mCamera);
-		pauseScreen = new PauseScene(mainActivity, this.mCamera, this.mEngine);
+		menuScreen.loadResources();
+		gameScreen.loadResources();
+		pauseScreen.loadResources();
 		}
 
 	//Method creates all of the Game Scenes

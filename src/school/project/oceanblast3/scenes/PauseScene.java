@@ -46,14 +46,7 @@ public class PauseScene implements ISceneCreator {
 		mScene = new CameraScene(camera);
 		mEngine = engine;
 
-		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-		pausedAtlas = new BitmapTextureAtlas(mActivity.getTextureManager(), 200, 50, TextureOptions.DEFAULT);
-		mPausedTextureRegion = BitmapTextureAtlasTextureRegionFactory		
-			    .createFromAsset(this.pausedAtlas, mActivity, "paused.png",0, 0);
-		pausedAtlas.load();
-
-		
-	}
+		}
 	 /**
      * Creates a Sprite that manages Pausing
      * @param pX X Position to be created at
@@ -88,6 +81,16 @@ public class PauseScene implements ISceneCreator {
 	return pauseButton;
     }
 
+    @Override
+	public void loadResources() {
+		// TODO Auto-generated method stub
+    	BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
+		pausedAtlas = new BitmapTextureAtlas(mActivity.getTextureManager(), 200, 50, TextureOptions.DEFAULT);
+		mPausedTextureRegion = BitmapTextureAtlasTextureRegionFactory		
+			    .createFromAsset(this.pausedAtlas, mActivity, "paused.png",0, 0);
+		pausedAtlas.load();
+	}
+	
 	
 	@Override
 	public void createScene(SceneManager sceneManager) {

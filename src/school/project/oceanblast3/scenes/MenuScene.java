@@ -57,6 +57,12 @@ public class MenuScene implements ISceneCreator
 	public MenuScene(BaseGameActivity activity)
 	{
 		this.mActivity = activity;	
+	
+	}
+	
+	@Override
+	public void loadResources() {
+		// TODO Auto-generated method stub
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");	
 		
 		//background
@@ -84,8 +90,9 @@ public class MenuScene implements ISceneCreator
 		catch (IOException e)
 			{
 				e.printStackTrace();
-			}	
+			}
 	}
+    
 	
 	public void createScene(SceneManager sceneManager)
 	{	
@@ -156,7 +163,8 @@ public class MenuScene implements ISceneCreator
 		// TODO Auto-generated method stub
 		return mScene;
 	}
-    
+
+	
 	
 	
 }
