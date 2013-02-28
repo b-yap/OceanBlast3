@@ -8,7 +8,7 @@
  *
  */
 
-package school.project.oceanblast3;
+package school.project.oceanblast3.managers;
 
 public class GameManager {
 	private static GameManager INSTANCE;

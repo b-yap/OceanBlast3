@@ -26,6 +26,9 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegion
 import org.andengine.opengl.util.GLState;
 import org.andengine.ui.activity.BaseGameActivity;
 
+import school.project.oceanblast3.managers.ResourcesManager;
+import school.project.oceanblast3.managers.SceneManager;
+
 import android.util.Log;
 import android.widget.Toast;
 
@@ -34,9 +37,13 @@ public class MainActivity extends BaseGameActivity
 		private Camera camera;
 		private Scene splashScene;
 		private boolean mPlaceOnScreenControlsAtDifferentVerticalLocations = false;	
-		public SceneManager sceneManager;
 		
-		    private BitmapTextureAtlas splashTextureAtlas;
+		//managers
+		private SceneManager sceneManager;
+		private ResourcesManager resourcesManager;
+		
+		 //splash
+			private BitmapTextureAtlas splashTextureAtlas;
 		    private ITextureRegion splashTextureRegion;
 		    private Sprite splash;
 		
@@ -67,19 +74,23 @@ public class MainActivity extends BaseGameActivity
 		public void onCreateResources(OnCreateResourcesCallback pOnCreateResourcesCallback) throws Exception
 		{
 		Log.d("-------onCreateResources()---------", " ");
-		sceneManager = new SceneManager(this,this.mEngine, this.camera);
-		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-		        splashTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 640, 300, TextureOptions.DEFAULT);
-		        splashTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(splashTextureAtlas, this, "splash.png", 0, 0);
-		        splashTextureAtlas.load();
-		     
+		
+		ResourcesManager.prepareManager(mEngine, this, this.camera, getVertexBufferObjectManager());
+		resourcesManager =ResourcesManager.getInstance();
+		resourcesManager.loadSplashScene();
+		sceneManager = SceneManager.getInstance();
+
+//		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
+//		        splashTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 640, 300, TextureOptions.DEFAULT);
+//		        splashTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(splashTextureAtlas, this, "splash.png", 0, 0);
+//		        splashTextureAtlas.load();
+//		     
 		        pOnCreateResourcesCallback.onCreateResourcesFinished();
 		}
 
 		public void onCreateScene(OnCreateSceneCallback pOnCreateSceneCallback) throws Exception
 		{
 		Log.d("-------onCreateScene()---------", " ");
-		initSplashScene();
 		sceneManager.setCurrentScene(ConstantsList.SceneType.SPLASH);
 		        pOnCreateSceneCallback.onCreateSceneFinished(this.splashScene);
 		}

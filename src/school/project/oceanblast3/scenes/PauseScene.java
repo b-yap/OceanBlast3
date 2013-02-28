@@ -28,8 +28,9 @@ import org.andengine.ui.activity.BaseGameActivity;
 import android.util.Log;
 
 import school.project.oceanblast3.ConstantsList;
-import school.project.oceanblast3.SceneManager;
 import school.project.oceanblast3.interfaces.ISceneCreator;
+import school.project.oceanblast3.managers.ResourcesManager;
+import school.project.oceanblast3.managers.SceneManager;
 
 public class PauseScene implements ISceneCreator {
 	
@@ -41,10 +42,10 @@ public class PauseScene implements ISceneCreator {
 	private BitmapTextureAtlas pausedAtlas;
 	private Sprite pauseButton;
 	
-	public PauseScene(BaseGameActivity activity, Camera camera, Engine engine){
-		mActivity = activity;
-		mScene = new CameraScene(camera);
-		mEngine = engine;
+	public PauseScene(){
+		mActivity = ResourcesManager.getInstance().activity;
+		mScene = new CameraScene(ResourcesManager.getInstance().mCamera);
+		mEngine = ResourcesManager.getInstance().engine;
 
 		}
 	 /**

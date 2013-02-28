@@ -25,8 +25,9 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 
 import school.project.oceanblast3.ConstantsList;
-import school.project.oceanblast3.SceneManager;
 import school.project.oceanblast3.interfaces.ISceneCreator;
+import school.project.oceanblast3.managers.ResourcesManager;
+import school.project.oceanblast3.managers.SceneManager;
 
 public class MenuScene implements ISceneCreator 
 {
@@ -54,9 +55,9 @@ public class MenuScene implements ISceneCreator
 	
 	
 	//constructor - load resources
-	public MenuScene(BaseGameActivity activity)
+	public MenuScene()
 	{
-		this.mActivity = activity;	
+		this.mActivity = ResourcesManager.getInstance().activity;	
 	
 	}
 	

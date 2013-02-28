@@ -26,6 +26,7 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.BaseGameActivity;
 
 import school.project.oceanblast3.ConstantsList;
+import school.project.oceanblast3.managers.ResourcesManager;
 import android.opengl.GLES20;
 
 public class AnalogControls {
@@ -43,11 +44,10 @@ public class AnalogControls {
 	private Camera mCamera;
 	private BaseGameActivity mActivity;
 	
-	public AnalogControls(){}
 	
-	public AnalogControls(BaseGameActivity activity, Camera camera){
-	this.mActivity=activity;
-	this.mCamera=camera;
+	public AnalogControls(){
+	this.mActivity=ResourcesManager.getInstance().activity;
+	this.mCamera=ResourcesManager.getInstance().mCamera;
 	
 	this.vertextBufferObjectManager = mActivity.getVertexBufferObjectManager();
 	}

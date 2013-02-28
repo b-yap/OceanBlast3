@@ -8,18 +8,17 @@
  *
  */
 
-package school.project.oceanblast3;
+package school.project.oceanblast3.managers;
 
 import java.util.ArrayList;
 
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
-import org.andengine.entity.scene.Scene;
-import org.andengine.entity.scene.background.Background;
 import org.andengine.ui.activity.BaseGameActivity;
 
 import android.util.Log;
 
+import school.project.oceanblast3.ConstantsList;
 import school.project.oceanblast3.interfaces.ILoaderObserver;
 import school.project.oceanblast3.interfaces.IObserver;
 import school.project.oceanblast3.interfaces.ISceneCreator;
@@ -30,24 +29,24 @@ import school.project.oceanblast3.scenes.ScoreObserver;
 
 public class SceneManager implements ILoaderObserver {
 
+	private static final SceneManager INSTANCE = new SceneManager();	
+	private Engine mEngine =ResourcesManager.getInstance().engine;
 	private ConstantsList.SceneType currentScene;
-	private BaseGameActivity mainActivity;
-	private Engine mEngine;
-	private Camera mCamera;
+	private BaseGameActivity mainActivity=ResourcesManager.getInstance().activity;
+
+	private Camera mCamera= ResourcesManager.getInstance().mCamera;
 	private ArrayList<IObserver> observers= new ArrayList<IObserver>();
 	private IObserver scoreObserver; 
 	private ISceneCreator menuScreen;
 	private ISceneCreator gameScreen;
 	private ISceneCreator pauseScreen;
+	private ISceneCreator splashScreen;
 	
 
-	public SceneManager(BaseGameActivity activity, Engine engine, Camera camera) {
-		this.mEngine = engine;
-		this.mCamera = camera;
-		this.mainActivity = activity;
-		menuScreen = new MenuScene(mainActivity);
-		gameScreen = new GameScene(mainActivity, this.mCamera);
-		pauseScreen = new PauseScene(mainActivity, this.mCamera, this.mEngine);	
+	public SceneManager() {
+		menuScreen = new MenuScene();
+		gameScreen = new GameScene();
+		pauseScreen = new PauseScene();	
 		this.scoreObserver = new ScoreObserver(mainActivity);
 		registerObserver(this.scoreObserver);		
 	}
@@ -76,8 +75,11 @@ public class SceneManager implements ILoaderObserver {
 		currentScene = scene;
 		switch (scene)
 		{
-		case SPLASH:
+		case SPLASH:{
+			mEngine.setScene()
+			
 			break;
+			}
 		case MENU:
 			{mEngine.setScene(menuScreen.getScene());			
 			 Log.d("set Menu", " ");
@@ -118,9 +120,13 @@ public class SceneManager implements ILoaderObserver {
 		for (IObserver ob : observers) {
              Log.d("Notifying Observers on change in Score", " ");
              ob.update("updated");
-		}
-		
+		}	
 	}
+	
+	public static SceneManager getInstance(){
+		return INSTANCE;
+	}
+	
 	
 
 }

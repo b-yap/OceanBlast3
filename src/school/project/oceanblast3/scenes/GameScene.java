@@ -41,8 +41,9 @@ import android.opengl.GLES20;
 import android.util.Log;
 
 import school.project.oceanblast3.ConstantsList;
-import school.project.oceanblast3.SceneManager;
 import school.project.oceanblast3.interfaces.ISceneCreator;
+import school.project.oceanblast3.managers.ResourcesManager;
+import school.project.oceanblast3.managers.SceneManager;
 import school.project.oceanblast3.objects.Enemy;
 
 public class GameScene implements ISceneCreator  {
@@ -51,8 +52,7 @@ public class GameScene implements ISceneCreator  {
 	private BaseGameActivity mActivity;
 	private VertexBufferObjectManager vertextBufferObjectManager;
 	private PhysicsHandler physicsHandler;
-	private SceneManager manager;
-	private Camera mCamera;
+		private Camera mCamera;
 	private int mScore=0;
 	private Scene mScene=new Scene();
 	private Font mFont;
@@ -89,10 +89,10 @@ public class GameScene implements ISceneCreator  {
 	
 		private AnalogControls analogControl;
 		
-	public GameScene(BaseGameActivity activity, Camera camera){
-		this.mActivity = activity;
-		this.mCamera =camera;
-		this.analogControl = new AnalogControls(activity,camera);
+	public GameScene(){
+		this.mActivity = ResourcesManager.getInstance().activity;
+		this.mCamera =ResourcesManager.getInstance().mCamera;
+		this.analogControl = new AnalogControls();
 			
 	}
 	
@@ -160,8 +160,6 @@ this.analogControl.loadAnalogControlResources();
 		final int centerX=(ConstantsList.CAMERA_WIDTH - playerAtlas.getWidth())/2;
 		final int centerY=(ConstantsList.CAMERA_HEIGHT - playerAtlas.getHeight())/2;	
 		this.vertextBufferObjectManager = mActivity.getVertexBufferObjectManager();
-		this.manager = sceneManager;
-		
 		 //background
 		 final AutoParallaxBackground autoParallaxBackground = new AutoParallaxBackground(0, 0, 0, 5);
 		 autoParallaxBackground.attachParallaxEntity(new ParallaxEntity(0.0f, new Sprite(0, ConstantsList.CAMERA_HEIGHT - 
@@ -169,8 +167,8 @@ this.analogControl.loadAnalogControlResources();
 		 autoParallaxBackground.attachParallaxEntity(new ParallaxEntity(-10.0f, new Sprite(0, ConstantsList.CAMERA_HEIGHT - 
 				 this.parallaxLayerFront.getHeight(),this.parallaxLayerFront, this.vertextBufferObjectManager)));
 		 mScene.setBackground(autoParallaxBackground);
-		 
-		 this.autoParallaxBackground = autoParallaxBackground;
+		
+	//	 this.autoParallaxBackground = autoParallaxBackground;
 		 
 		 //listener for the pause button
 		 OnClickListener pauseListener = new OnClickListener(){
@@ -235,7 +233,7 @@ this.analogControl.loadAnalogControlResources();
 	}
 	
 	private void dispatch(){	
-		manager.setCurrentScene(ConstantsList.SceneType.PAUSE);
+		SceneManager.getInstance().setCurrentScene(ConstantsList.SceneType.PAUSE);
 	}
 	
 	private void pelletShooting(){

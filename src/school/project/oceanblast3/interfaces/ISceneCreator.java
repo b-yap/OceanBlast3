@@ -12,7 +12,7 @@ package school.project.oceanblast3.interfaces;
 
 import org.andengine.entity.scene.Scene;
 
-import school.project.oceanblast3.SceneManager;
+import school.project.oceanblast3.managers.SceneManager;
 
 public interface ISceneCreator {
 
