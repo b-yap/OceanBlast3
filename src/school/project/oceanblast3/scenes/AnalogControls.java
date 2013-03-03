@@ -35,7 +35,7 @@ public class AnalogControls {
 	private BitmapTextureAtlas onScreenControlAtlas;
 	private ITextureRegion onScreenControlBaseRegion;
 	private ITextureRegion onScreenControlKnobRegion;
-	private VertexBufferObjectManager vertextBufferObjectManager;
+	private VertexBufferObjectManager vboManager;
 	private PhysicsHandler mPhysicsHandler;
 	private AnalogOnScreenControl analogOnScreenControl;
 	private Sprite userPlayer;
@@ -47,9 +47,9 @@ public class AnalogControls {
 	
 	public AnalogControls(){
 	this.mActivity=ResourcesManager.getInstance().activity;
-	this.mCamera=ResourcesManager.getInstance().mCamera;
+	this.mCamera=ResourcesManager.getInstance().camera;
 	
-	this.vertextBufferObjectManager = mActivity.getVertexBufferObjectManager();
+	this.vboManager = ResourcesManager.getInstance().vboManager;
 	}
 	
 		public void setPlayerPhysicsHandler(Sprite player,PhysicsHandler physicsHandler){
@@ -76,7 +76,7 @@ public class AnalogControls {
 		this.analogOnScreenControl = new AnalogOnScreenControl(15, ConstantsList.CAMERA_HEIGHT -  
 				this.onScreenControlBaseRegion.getHeight()-15, this.mCamera, 
 				this.onScreenControlBaseRegion, this.onScreenControlKnobRegion, 
-				0.1f, 200, this.vertextBufferObjectManager, new IAnalogOnScreenControlListener() {
+				0.1f, 200, this.vboManager, new IAnalogOnScreenControlListener() {
 
 					public void onControlChange(BaseOnScreenControl pBaseOnScreenControl,float pValueX, float pValueY) {
 						mPhysicsHandler.setVelocity(pValueX * 250, pValueY * 250);

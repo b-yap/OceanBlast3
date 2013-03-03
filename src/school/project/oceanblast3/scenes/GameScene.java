@@ -1,19 +1,18 @@
 /**
- * MainGameScene.java
- * Jan 19, 2013
- * 9:58:01 AM
- *
- * @author B. Carla Yap 
- * email: bcarlayap@ymail.com
- *
- */
+* GameScene_base.java
+* Mar 3, 2013
+* 7:16:19 AM
+* 
+* @author B. Carla Yap
+* @email bcarlayap@ymail.com
+**/
+
 
 package school.project.oceanblast3.scenes;
 
-import org.andengine.engine.camera.Camera;
+import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.handler.physics.PhysicsHandler;
-import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.AutoParallaxBackground;
 import org.andengine.entity.scene.background.ParallaxBackground.ParallaxEntity;
 import org.andengine.entity.sprite.ButtonSprite;
@@ -21,252 +20,166 @@ import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.sprite.ButtonSprite.OnClickListener;
 import org.andengine.entity.text.Text;
 import org.andengine.opengl.font.Font;
-import org.andengine.opengl.font.FontFactory;
-import org.andengine.opengl.texture.TextureOptions;
-import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
-import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
-import org.andengine.opengl.texture.atlas.bitmap.BuildableBitmapTextureAtlas;
-import org.andengine.opengl.texture.atlas.bitmap.source.IBitmapTextureAtlasSource;
-import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtlasBuilder;
-import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
-import org.andengine.opengl.texture.region.ITextureRegion;
-import org.andengine.opengl.texture.region.TextureRegion;
-import org.andengine.opengl.texture.region.TiledTextureRegion;
-import org.andengine.opengl.vbo.VertexBufferObjectManager;
-import org.andengine.ui.activity.BaseGameActivity;
-import org.andengine.util.debug.Debug;
 
-import android.graphics.Typeface;
 import android.opengl.GLES20;
 import android.util.Log;
 
 import school.project.oceanblast3.ConstantsList;
-import school.project.oceanblast3.interfaces.ISceneCreator;
-import school.project.oceanblast3.managers.ResourcesManager;
+import school.project.oceanblast3.ConstantsList.SceneType;
 import school.project.oceanblast3.managers.SceneManager;
 import school.project.oceanblast3.objects.Enemy;
 
-public class GameScene implements ISceneCreator  {
+public class GameScene extends BaseScene {
 
-	
-	private BaseGameActivity mActivity;
-	private VertexBufferObjectManager vertextBufferObjectManager;
-	private PhysicsHandler physicsHandler;
-		private Camera mCamera;
 	private int mScore=0;
-	private Scene mScene=new Scene();
+	
+	
+	private Sprite userPlayer;
+	private ButtonSprite pauseButton;
+	private Enemy goldfish;
+	private Text scoreText;
 	private Font mFont;
-	
-	//player
-		private BitmapTextureAtlas playerAtlas;
-		private TiledTextureRegion submarineRegion;
-		private TextureRegion pelletRegion;
-		
-	//enemy
-		private  BuildableBitmapTextureAtlas animatedEnemyAtlas;
-		private  TiledTextureRegion goldfishRegion;
-		
-	//pellet
-		private BuildableBitmapTextureAtlas mShootTextureAtlas;
-		private ITextureRegion mFace1TextureRegion;
-		private ITextureRegion mFace2TextureRegion;
-		
-	//pause button
-		private  BitmapTextureAtlas pauseAtlas;
-		private  TextureRegion pauseRegion;
-				
-	//parallax background
-		private BitmapTextureAtlas autoParallaxAtlas;
-		private ITextureRegion parallaxLayerBack;
-		private ITextureRegion parallaxLayerFront;
-		
-	//sprites
-		private AutoParallaxBackground autoParallaxBackground;
-		private Sprite userPlayer;
-		private ButtonSprite pauseButton;
-		private Enemy goldfish;
-		private Text scoreText;
-	
-		private AnalogControls analogControl;
-		
-	public GameScene(){
-		this.mActivity = ResourcesManager.getInstance().activity;
-		this.mCamera =ResourcesManager.getInstance().mCamera;
-		this.analogControl = new AnalogControls();
+	private PhysicsHandler physicsHandler;
+	private BaseScene mScene;
 			
-	}
 	
 	@Override
-	public void loadResources() {
-		// TODO Auto-generated method stub
-this.analogControl.loadAnalogControlResources();
+	public void createScene() {
+		this.mScene = this;	
 		
-		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
+		createBackground();
+		createGameObjects();
+		createButtons();
+		resourcesManager.game_analogControl.setPlayerPhysicsHandler(userPlayer, physicsHandler);
+		resourcesManager.game_analogControl.setAnalogControl();
 		
-		//player: submarine	
-		playerAtlas = new BitmapTextureAtlas(mActivity.getTextureManager(),200,200);
-			submarineRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.playerAtlas,
-							mActivity,"submarine.png",0,0,1,1);
-			pelletRegion =BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.playerAtlas,
-					mActivity,"pellet.png",0,118);
-			playerAtlas.load();
-		
-		//font
-		this.mFont = FontFactory.create(mActivity.getFontManager(), mActivity.getTextureManager(), 256, 256, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32);
-		this.mFont.load();
-			
-		//pause  button
-		pauseAtlas = new BitmapTextureAtlas(mActivity.getTextureManager(),32,32);
-			pauseRegion =BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.pauseAtlas,
-					mActivity, "pause.png", 0, 0);
-		pauseAtlas.load();
-		
-		//parallax background
-		autoParallaxAtlas = new BitmapTextureAtlas(mActivity.getTextureManager(), 1024, 1024);
-			parallaxLayerFront = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.autoParallaxAtlas,
-								mActivity, "parallax_background_layer_front.png", 0, 0);
-			parallaxLayerBack = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.autoParallaxAtlas,
-								mActivity, "background.png", 0, 188);
-		autoParallaxAtlas.load();	
-		
-				
-		this.mShootTextureAtlas = new BuildableBitmapTextureAtlas(mActivity.getTextureManager(), 512, 512);
-		this.mFace1TextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mShootTextureAtlas, mActivity, "face_box_tiled.png");
-		this.mFace2TextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mShootTextureAtlas, mActivity, "face_circle_tiled.png");
-		
-		try {
-			this.mShootTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 0));
-			this.mShootTextureAtlas.load();
-		} catch (TextureAtlasBuilderException e) {
-			Debug.e(e);
-		}
-		
-		//animated sprite: enemies
-				this.animatedEnemyAtlas = new BuildableBitmapTextureAtlas(mActivity.getTextureManager(), 512, 256, TextureOptions.NEAREST);
-				goldfishRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(animatedEnemyAtlas, 
-								 mActivity, "goldfish_tiled.png",2,1);
-				
-				try {
-					this.animatedEnemyAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
-					this.animatedEnemyAtlas.load();
-				} catch (TextureAtlasBuilderException e) {
-					Debug.e(e);
+			this.registerUpdateHandler(new IUpdateHandler() {
+				public void reset() { }
+
+				public void onUpdate(final float pSecondsElapsed) {
+					if(userPlayer.collidesWith(goldfish)) {
+						Log.d("gameOver!", " ");
+					}else{}
+					if(!camera.isRectangularShapeVisible(userPlayer)) {
+						//nothing
+					}
 				}
+			});
+
+
 	}
 
-	
-	public void createScene(SceneManager sceneManager) {
-		//adjustment	
-		final int centerX=(ConstantsList.CAMERA_WIDTH - playerAtlas.getWidth())/2;
-		final int centerY=(ConstantsList.CAMERA_HEIGHT - playerAtlas.getHeight())/2;	
-		this.vertextBufferObjectManager = mActivity.getVertexBufferObjectManager();
-		 //background
-		 final AutoParallaxBackground autoParallaxBackground = new AutoParallaxBackground(0, 0, 0, 5);
-		 autoParallaxBackground.attachParallaxEntity(new ParallaxEntity(0.0f, new Sprite(0, ConstantsList.CAMERA_HEIGHT - 
-				 this.parallaxLayerBack.getHeight(),this.parallaxLayerBack, this.vertextBufferObjectManager)));
-		 autoParallaxBackground.attachParallaxEntity(new ParallaxEntity(-10.0f, new Sprite(0, ConstantsList.CAMERA_HEIGHT - 
-				 this.parallaxLayerFront.getHeight(),this.parallaxLayerFront, this.vertextBufferObjectManager)));
-		 mScene.setBackground(autoParallaxBackground);
+	@Override
+	public void onBackKeyPressed() {
+		SceneManager.getInstance().loadMenuScene();
 		
-	//	 this.autoParallaxBackground = autoParallaxBackground;
+	}
+
+	@Override
+	public SceneType getSceneType() {
+		// TODO Auto-generated method stub
+		return ConstantsList.SceneType.GAME;
+	}
+
+	@Override
+	public void disposeScene() {
+		
+	}
+	
+	
+	private void createBackground(){
+	
+		//background
+		final AutoParallaxBackground autoParallaxBackground = new AutoParallaxBackground(0, 0, 0, 5);
+		autoParallaxBackground.attachParallaxEntity(new ParallaxEntity(0.0f, new Sprite(0, ConstantsList.CAMERA_HEIGHT - 
+				 resourcesManager.game_parallaxLayerBackRegion.getHeight(),resourcesManager.game_parallaxLayerBackRegion,
+				 vboManager)));
 		 
+		 autoParallaxBackground.attachParallaxEntity(new ParallaxEntity(-10.0f, new Sprite(0, ConstantsList.CAMERA_HEIGHT - 
+				 resourcesManager.game_parallaxLayerFrontRegion.getHeight(), resourcesManager.game_parallaxLayerFrontRegion,
+				 vboManager)));
+		 this.setBackground(autoParallaxBackground);
+			 
+	}
+	
+
+	private void createGameObjects(){	
+		
+		final int centerX= (int) (ConstantsList.CAMERA_WIDTH - resourcesManager.game_playerRegion.getHeight())/2;	
+		final int centerY=(int) (ConstantsList.CAMERA_HEIGHT - resourcesManager.game_playerRegion.getHeight())/2;	
+	
+		//player
+		 final Sprite userPlayer = new Sprite(centerX, centerY, resourcesManager.game_playerRegion,vboManager);
+		 this.physicsHandler = new PhysicsHandler(userPlayer);
+		 userPlayer.registerUpdateHandler(physicsHandler);
+		 this.attachChild(userPlayer);
+		 this.userPlayer = userPlayer;
+		
+		//enemy
+	    goldfish = new Enemy(650,50,resourcesManager.game_enemyGoldfishRegion,vboManager,-100);
+		goldfish.animation(200);
+		final PhysicsHandler physicsHand = new PhysicsHandler(goldfish);
+		goldfish.registerUpdateHandler(physicsHand);
+		this.attachChild(goldfish);
+					
+		this.scoreText = new Text(5, 5, resourcesManager.font, "Score: 0", "Score: XXXX".length(), vboManager);
+		this.scoreText.setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		this.scoreText.setAlpha(0.5f);
+		this.attachChild(this.scoreText);
+			
+	}
+	
+	private void createButtons(){
 		 //listener for the pause button
 		 OnClickListener pauseListener = new OnClickListener(){
-				//play Music
+			
 				public void onClick(ButtonSprite pButtonSprite, float pTouchAreaLocalX,
 						float pTouchAreaLocalY) {
-					dispatch();
+					// call the setCurrentScene for pause button
+					SceneManager.getInstance().setCurrentScene(SceneType.PAUSE);
 				}
 			};	
 			
 		 //pause button
-		 final ButtonSprite pauseButton = new ButtonSprite(740,10,this.pauseRegion,this.vertextBufferObjectManager,pauseListener);
-		 mScene.registerTouchArea(pauseButton);
-		 mScene.setTouchAreaBindingOnActionDownEnabled(true);
-		 mScene.attachChild(pauseButton);
-		 this.pauseButton = pauseButton;
+		 pauseButton = new ButtonSprite(740,10,resourcesManager.game_btnPauseRegion,vboManager,pauseListener);
+		 this.registerTouchArea(pauseButton);
+		 this.setTouchAreaBindingOnActionDownEnabled(true);
+		 this.attachChild(pauseButton);
 		 
-		 //player
-		 final Sprite userPlayer = new Sprite(centerX, centerY, this.submarineRegion,this.vertextBufferObjectManager);
-		 this.physicsHandler = new PhysicsHandler(userPlayer);
-		 userPlayer.registerUpdateHandler(physicsHandler);
-		 mScene.attachChild(userPlayer);
-		this.userPlayer = userPlayer;
-		
-		//enemy
-	    final Enemy goldfish = new Enemy(650,50,this.goldfishRegion,this.vertextBufferObjectManager,-100);
-		goldfish.animation(200);
-		final PhysicsHandler physicsHand = new PhysicsHandler(goldfish);
-		goldfish.registerUpdateHandler(physicsHand);
-		mScene.attachChild(goldfish);
-		this.goldfish = goldfish;	
-		
-		this.scoreText = new Text(5, 5, this.mFont, "Score: 0", "Score: XXXX".length(), mActivity.getVertexBufferObjectManager());
-		this.scoreText.setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-		this.scoreText.setAlpha(0.5f);
-		this.mScene.attachChild(this.scoreText);
-		
-		this.analogControl.setPlayerPhysicsHandler(userPlayer, physicsHandler);
-		this.analogControl.setAnalogControl();
-		pelletShooting();
-		
-		mScene.registerUpdateHandler(new IUpdateHandler() {
-			public void reset() { }
-
-			public void onUpdate(final float pSecondsElapsed) {
-				//final Text centerText = new Text(350, 240, null, "Game Over!!", new TextOptions(HorizontalAlign.CENTER),vertextBufferObjectManager );				
-				
-				if(userPlayer.collidesWith(goldfish)) {
-					Log.d("gameOver!", " ");
-				}else{}
-				if(!mCamera.isRectangularShapeVisible(userPlayer)) {
-					//nothing
-				}
-			}
-		});
-	}
-
-	
-	public Scene getScene() {
-		mScene.setChildScene(this.analogControl.getAnalogControl());	
-		return this.mScene;
-	}
-	
-	private void dispatch(){	
-		SceneManager.getInstance().setCurrentScene(ConstantsList.SceneType.PAUSE);
+		pelletShooting();	
 	}
 	
 	private void pelletShooting(){
-		// shoot bullet listener
+		// shoot pellet listener
+	
 		
 		OnClickListener shootListener = new OnClickListener() {
 			
 			public void onClick(ButtonSprite pButtonSprite, float pTouchAreaLocalX,
 					float pTouchAreaLocalY) {
-				//the bullet
-			// final Rectangle bullet = new Rectangle(userPlayer.getX()+100,userPlayer.getY()+50, 32, 32, vertextBufferObjectManager);
-				final Sprite bullet = new Sprite(userPlayer.getX()+100, userPlayer.getY()+50,pelletRegion,vertextBufferObjectManager);
-				//bullet.setColor(1,0,0);
-				PhysicsHandler bulletHandler = new PhysicsHandler(bullet);
-				bulletHandler.setVelocityX(100);
-				bullet.registerUpdateHandler(bulletHandler);
-				mScene.attachChild(bullet);
+				//the pellet
+				final Sprite pellet = new Sprite(userPlayer.getX()+100, userPlayer.getY()+50,resourcesManager.game_pelletRegion,vboManager);
+			
+				PhysicsHandler pelletHandler = new PhysicsHandler(pellet);
+				pelletHandler.setVelocityX(100);
+				pellet.registerUpdateHandler(pelletHandler);
+				mScene.attachChild(pellet);
 				
 				mScene.registerUpdateHandler(new IUpdateHandler() {
 					public void reset() { 
 											}
 
 					public void onUpdate(final float pSecondsElapsed) {							
-						if(bullet.collidesWith(goldfish)){
+						if(pellet.collidesWith(goldfish)){
 							mScore++;
 							
 							scoreText.setText("Score: " + mScore);
-							mActivity.runOnUpdateThread(new Runnable(){
+							activity.runOnUpdateThread(new Runnable(){
 
 								@Override
 								public void run() {
-									mScene.detachChild(bullet);
-									bullet.setVisible(false);
+									mScene.detachChild(pellet);
+									pellet.setVisible(false);
 									mScene.detachChild(goldfish);
 									goldfish = null;
 									Log.d("hit!", " ");
@@ -277,20 +190,20 @@ this.analogControl.loadAnalogControlResources();
 								
 							});	 
 							
-							//bullet.dispose();
-//								//bullet.detachSelf();
-//								//bullet = null;
-//								mScene.detachChild(bullet);
-//								bullet.setIgnoreUpdate(true);
-//								bullet.clearEntityModifiers();
-//								bullet.clearUpdateHandlers();				
+							//pellet.dispose();
+//								//pellet.detachSelf();
+//								//pellet = null;
+//								mScene.detachChild(pellet);
+//								pellet.setIgnoreUpdate(true);
+//								pellet.clearEntityModifiers();
+//								pellet.clearUpdateHandlers();				
 						}
-						if(bullet.getX()>700){
-							mActivity.runOnUpdateThread(new Runnable(){
+						if(pellet.getX()>700){
+							activity.runOnUpdateThread(new Runnable(){
 
 								@Override
 								public void run() {
-									mScene.detachChild(bullet);
+									mScene.detachChild(pellet);
 									
 								}
 								
@@ -303,14 +216,12 @@ this.analogControl.loadAnalogControlResources();
 		};
 		
 		//the shoot button
-		final Sprite fire = new ButtonSprite(700, 420, this.mFace1TextureRegion, 
-				this.mFace2TextureRegion, this.vertextBufferObjectManager,shootListener);
+		final Sprite fire = new ButtonSprite(700, 420, resourcesManager.game_btnShootRegion, 
+				resourcesManager.game_btnShootPushedRegion, vboManager,shootListener);
 		mScene.registerTouchArea(fire);
 		mScene.attachChild(fire);
 		mScene.setTouchAreaBindingOnActionDownEnabled(true);
 	}
-
-
 	
-}
 
+}

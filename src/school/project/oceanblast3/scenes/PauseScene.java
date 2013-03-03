@@ -1,126 +1,90 @@
 /**
- * PauseScene.java
- * Jan 29, 2013
- * 4:50:55 PM
- *
- * @author B. Carla Yap 
- * email: bcarlayap@ymail.com
- *
- */
+* PauseScene_base.java
+* Mar 3, 2013
+* 12:40:57 PM
+* 
+* @author B. Carla Yap
+* @email bcarlayap@ymail.com
+**/
+
 
 package school.project.oceanblast3.scenes;
 
-import org.andengine.engine.Engine;
-import org.andengine.engine.camera.Camera;
-import org.andengine.entity.modifier.MoveModifier;
 import org.andengine.entity.scene.CameraScene;
-import org.andengine.entity.scene.Scene;
-import org.andengine.entity.sprite.ButtonSprite;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.util.FPSLogger;
 import org.andengine.input.touch.TouchEvent;
-import org.andengine.opengl.texture.TextureOptions;
-import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
-import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.region.TextureRegion;
-import org.andengine.ui.activity.BaseGameActivity;
 
 import android.util.Log;
 
 import school.project.oceanblast3.ConstantsList;
-import school.project.oceanblast3.interfaces.ISceneCreator;
-import school.project.oceanblast3.managers.ResourcesManager;
+import school.project.oceanblast3.ConstantsList.SceneType;
 import school.project.oceanblast3.managers.SceneManager;
 
-public class PauseScene implements ISceneCreator {
-	
-	private CameraScene mScene;
-	private Engine mEngine;
-	private SceneManager manager;
-	private BaseGameActivity mActivity;
-	private TextureRegion mPausedTextureRegion;
-	private BitmapTextureAtlas pausedAtlas;
-	private Sprite pauseButton;
-	
-	public PauseScene(){
-		mActivity = ResourcesManager.getInstance().activity;
-		mScene = new CameraScene(ResourcesManager.getInstance().mCamera);
-		mEngine = ResourcesManager.getInstance().engine;
+public class PauseScene extends BaseScene {
 
-		}
-	 /**
-     * Creates a Sprite that manages Pausing
-     * @param pX X Position to be created at
-     * @param pY Y Position to be created at
-     * @return
-     */
-    private Sprite createPauseSprite(float centerX, float centerY, TextureRegion button) {
-    	
-    	final Sprite pauseButton = new Sprite(centerX, centerY,	button,
-				mActivity.getVertexBufferObjectManager()) {
-
-				@Override
-				public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
-						final float pTouchAreaLocalX, final float pTouchAreaLocalY) {				
-						// Toggle pause or not				
-						switch(pSceneTouchEvent.getAction()) {
-						case TouchEvent.ACTION_DOWN:
-							Log.d("action down on pause", " ");
-							dispatch();
-							break;
-						case TouchEvent.ACTION_MOVE:
-							Log.d("action down on move", " ");
-							dispatch();
-							break;
-						case TouchEvent.ACTION_UP:
-							break;
-						}
-				return true;
-				}
-		};
-		
-	return pauseButton;
-    }
-
-    @Override
-	public void loadResources() {
-		// TODO Auto-generated method stub
-    	BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-		pausedAtlas = new BitmapTextureAtlas(mActivity.getTextureManager(), 200, 50, TextureOptions.DEFAULT);
-		mPausedTextureRegion = BitmapTextureAtlasTextureRegionFactory		
-			    .createFromAsset(this.pausedAtlas, mActivity, "paused.png",0, 0);
-		pausedAtlas.load();
-	}
-	
 	
 	@Override
-	public void createScene(SceneManager sceneManager) {
-		manager = sceneManager;
-		this.mEngine.registerUpdateHandler(new FPSLogger());
-		final float centerX = (ConstantsList.CAMERA_WIDTH - this.mPausedTextureRegion.getWidth()) / 2;
-		final float centerY = (ConstantsList.CAMERA_HEIGHT - this.mPausedTextureRegion.getHeight()) / 2;
+	public void createScene() {
+		engine.registerUpdateHandler(new FPSLogger());
+		final float centerX = (ConstantsList.CAMERA_WIDTH - resourcesManager.pause_btnPausedRegion.getWidth()) / 2;
+		final float centerY = (ConstantsList.CAMERA_HEIGHT - resourcesManager.pause_btnPausedRegion.getHeight()) / 2;
 		
-		final Sprite pausedSprite = createPauseSprite(centerX, centerY,this.mPausedTextureRegion);
-		mScene.registerTouchArea(pausedSprite);
-		 mScene.setTouchAreaBindingOnActionDownEnabled(true);
-		mScene.attachChild(pausedSprite);
+		final Sprite pausedSprite = createPauseSprite(centerX, centerY,resourcesManager.pause_btnPausedRegion);
+		this.registerTouchArea(pausedSprite);
+		this.setTouchAreaBindingOnActionDownEnabled(true);
+		this.attachChild(pausedSprite);
 		/* Makes the paused Game look through. */
-		mScene.setBackgroundEnabled(false);
+		this.setBackgroundEnabled(false);
 		
-	}
-	
-	
-	private void dispatch(){
 		
-		manager.setCurrentScene(ConstantsList.SceneType.MAINGAME);
 	}
 
 	@Override
-	public Scene getScene() {
-		return mScene;
+	public void onBackKeyPressed() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public SceneType getSceneType() {
+		// TODO Auto-generated method stub
+		return SceneType.PAUSE;
+	}
+
+	@Override
+	public void disposeScene() {
+		// TODO Auto-generated method stub
+		
 	}
 	
-	
+	 private Sprite createPauseSprite(float centerX, float centerY, TextureRegion button) {
+	    	
+	    	final Sprite pauseButton = new Sprite(centerX, centerY,	button,
+					activity.getVertexBufferObjectManager()) {
+
+					@Override
+					public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
+							final float pTouchAreaLocalX, final float pTouchAreaLocalY) {				
+							// Toggle pause or not				
+							switch(pSceneTouchEvent.getAction()) {
+							case TouchEvent.ACTION_DOWN:
+								Log.d("action down on pause", " ");
+								// play the game again. call the SceneManager
+								SceneManager.getInstance().setCurrentScene(SceneType.GAME);
+								break;
+							case TouchEvent.ACTION_MOVE:
+								break;
+							case TouchEvent.ACTION_UP:
+								break;
+							}
+					return true;
+					}
+			};
+			
+		return pauseButton;
+	    }
+
 
 }
-

@@ -19,6 +19,7 @@ import org.andengine.ui.activity.BaseGameActivity;
 import school.project.oceanblast3.ConstantsList;
 import school.project.oceanblast3.managers.ResourcesManager;
 
+
 public abstract class BaseScene extends Scene {
 	  //---------------------------------------------
     // VARIABLES
@@ -40,7 +41,7 @@ public abstract class BaseScene extends Scene {
         this.engine = resourcesManager.engine;
         this.activity = resourcesManager.activity;
         this.vboManager = resourcesManager.vboManager;
-        this.camera = resourcesManager.mCamera;
+        this.camera = resourcesManager.camera;
         createScene();
     }
     

@@ -14,83 +14,88 @@ import java.util.ArrayList;
 
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
+import org.andengine.engine.handler.timer.ITimerCallback;
+import org.andengine.engine.handler.timer.TimerHandler;
+import org.andengine.ui.IGameInterface.OnCreateSceneCallback;
 import org.andengine.ui.activity.BaseGameActivity;
 
+import android.content.res.Resources;
 import android.util.Log;
 
+import school.project.oceanblast3.scenes.BaseScene;
+import school.project.oceanblast3.managers.ResourcesManager;
 import school.project.oceanblast3.ConstantsList;
+import school.project.oceanblast3.ConstantsList.SceneType;
 import school.project.oceanblast3.interfaces.ILoaderObserver;
 import school.project.oceanblast3.interfaces.IObserver;
-import school.project.oceanblast3.interfaces.ISceneCreator;
 import school.project.oceanblast3.scenes.GameScene;
+import school.project.oceanblast3.scenes.LoadingScene;
 import school.project.oceanblast3.scenes.MenuScene;
 import school.project.oceanblast3.scenes.PauseScene;
 import school.project.oceanblast3.scenes.ScoreObserver;
+import school.project.oceanblast3.scenes.SplashScene;
 
 public class SceneManager implements ILoaderObserver {
 
 	private static final SceneManager INSTANCE = new SceneManager();	
-	private Engine mEngine =ResourcesManager.getInstance().engine;
-	private ConstantsList.SceneType currentScene;
+	private Engine engine =ResourcesManager.getInstance().engine;
+
+
 	private BaseGameActivity mainActivity=ResourcesManager.getInstance().activity;
 
-	private Camera mCamera= ResourcesManager.getInstance().mCamera;
+	private Camera mCamera= ResourcesManager.getInstance().camera;
 	private ArrayList<IObserver> observers= new ArrayList<IObserver>();
 	private IObserver scoreObserver; 
-	private ISceneCreator menuScreen;
-	private ISceneCreator gameScreen;
-	private ISceneCreator pauseScreen;
-	private ISceneCreator splashScreen;
 	
 
-	public SceneManager() {
-		menuScreen = new MenuScene();
-		gameScreen = new GameScene();
-		pauseScreen = new PauseScene();	
-		this.scoreObserver = new ScoreObserver(mainActivity);
-		registerObserver(this.scoreObserver);		
-	}
+	//scenes
+	private BaseScene splashScene;
+	private BaseScene menuScene;
+	private BaseScene gameScene;
+	private BaseScene pauseScene;
+	private BaseScene loadingScene;
+	private BaseScene currentScene;
+	
+	
 
-	//Method loads all of the resources for the game scenes
-	public void loadGameSceneResources() {
-		menuScreen.loadResources();
-		gameScreen.loadResources();
-		pauseScreen.loadResources();
-		}
+//	public SceneManager() {
+//		menuScreen = new MenuScene();
+//		gameScreen = new GameScene();
+//		pauseScreen = new PauseScene();	
+//		this.scoreObserver = new ScoreObserver(mainActivity);
+//		registerObserver(this.scoreObserver);		
+//	}
 
-	//Method creates all of the Game Scenes
-	public void createGameScenes() {
-		menuScreen.createScene(this);
-		gameScreen.createScene(this);
-		pauseScreen.createScene(this);
-		}
-
-	//Method allows you to get the currently active scene
-	public ConstantsList.SceneType getCurrentScene() {
+	public BaseScene getCurrentScene() {
 		return currentScene;
 	}	
 
 	//Method allows you to set the currently active scene
 	public void setCurrentScene(ConstantsList.SceneType scene) {
-		currentScene = scene;
+	
 		switch (scene)
 		{
 		case SPLASH:{
-			mEngine.setScene()
-			
+			engine.setScene(splashScene);
+			 Log.d("set Splash", " ");
+			 currentScene = splashScene;
 			break;
 			}
 		case MENU:
-			{mEngine.setScene(menuScreen.getScene());			
-			 Log.d("set Menu", " ");
+			{
+			engine.setScene(menuScene);			
+			Log.d("set Menu", " ");
+			currentScene = menuScene;
 			break;
 			}
-		case MAINGAME:{
+		case GAME:{
 			notifyObservers();
-			gameScreen.getScene().setIgnoreUpdate(false);
-			gameScreen.getScene().clearChildScene();
-			mEngine.setScene(gameScreen.getScene());
-			 Log.d("set Main game", " ");
+			gameScene.setIgnoreUpdate(false);
+			gameScene.clearChildScene();
+			gameScene.setChildScene(ResourcesManager.getInstance().game_analogControl.getAnalogControl());		
+			engine.setScene(gameScene);	
+			Log.d("set game", " ");
+			currentScene = gameScene; 
 			break;
 			}
 		case SCORE:{
@@ -98,14 +103,19 @@ public class SceneManager implements ILoaderObserver {
 			break;
 		}
 		case PAUSE:{	
-			gameScreen.getScene().setIgnoreUpdate(true);
-			gameScreen.getScene().setChildScene(pauseScreen.getScene(),false, true,true);
+			gameScene.setIgnoreUpdate(true);
+			gameScene.setChildScene(pauseScene,false, true,true);
 			Log.d("paused", "done");
-			
+			break;
+		}
+		case LOADING:{
+			engine.setScene(loadingScene);
+			Log.d("Scoring", " ");
 			break;
 		}
 	}
 	}
+	
 	public void registerObserver(IObserver observer) {
         observers.add(observer);
         Log.d(observer.getObserverName()+ " successfully registered"," ");	
@@ -127,6 +137,66 @@ public class SceneManager implements ILoaderObserver {
 		return INSTANCE;
 	}
 	
+	
+	
+	public void createSplashScene(OnCreateSceneCallback pOnCreateSceneCallback){
+		splashScene = new SplashScene();
+		currentScene =splashScene;
+		pOnCreateSceneCallback.onCreateSceneFinished(splashScene);		
+	}
+	
+	private void disposeSplashScene(){
+		ResourcesManager.getInstance().unloadSplashScene();
+		splashScene.disposeScene();
+		splashScene = null;
+	}
+	
+	public void createMenuScene(){
+		ResourcesManager.getInstance().loadMenuResources();
+		
+		menuScene = new MenuScene();
+		loadingScene = new LoadingScene();
+		setCurrentScene(ConstantsList.SceneType.MENU);
+		disposeSplashScene();
+		
+	}
+	
+	
+	/********************* WHILE LOADING *************************************/
+	
+	public void loadGameScene()
+	{	
+	    setCurrentScene(SceneType.LOADING);
+	    ResourcesManager.getInstance().unloadMenuScene();
+	    engine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback() 
+	    {
+	        public void onTimePassed(final TimerHandler pTimerHandler) 
+	        {
+	            engine.unregisterUpdateHandler(pTimerHandler);
+	            ResourcesManager.getInstance().loadGameResources();
+	            ResourcesManager.getInstance().loadPauseResources();
+	            gameScene = new GameScene();
+	            pauseScene = new PauseScene();
+	            setCurrentScene(SceneType.GAME);
+	        }
+	    }));
+	}
+	
+	public void loadMenuScene()
+	{
+	    setCurrentScene(SceneType.LOADING);
+	    gameScene.disposeScene();
+	    ResourcesManager.getInstance().unloadGameScene();
+	    engine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback() 
+	    {
+	        public void onTimePassed(final TimerHandler pTimerHandler) 
+	        {
+	            engine.unregisterUpdateHandler(pTimerHandler);
+	            ResourcesManager.getInstance().loadMenuScene();
+	            setCurrentScene(SceneType.MENU);
+	        }
+	    }));
+	}
 	
 
 }

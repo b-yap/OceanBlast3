@@ -17,36 +17,28 @@ import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.entity.scene.Scene;
-import org.andengine.entity.sprite.Sprite;
 import org.andengine.input.touch.controller.MultiTouch;
-import org.andengine.opengl.texture.TextureOptions;
-import org.andengine.opengl.texture.region.ITextureRegion;
-import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
-import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
-import org.andengine.opengl.util.GLState;
+
 import org.andengine.ui.activity.BaseGameActivity;
 
+import school.project.oceanblast3.ConstantsList.SceneType;
 import school.project.oceanblast3.managers.ResourcesManager;
 import school.project.oceanblast3.managers.SceneManager;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.Toast;
 
 public class MainActivity extends BaseGameActivity
 {
 		private Camera camera;
-		private Scene splashScene;
 		private boolean mPlaceOnScreenControlsAtDifferentVerticalLocations = false;	
 		
 		//managers
 		private SceneManager sceneManager;
 		private ResourcesManager resourcesManager;
 		
-		 //splash
-			private BitmapTextureAtlas splashTextureAtlas;
-		    private ITextureRegion splashTextureRegion;
-		    private Sprite splash;
-		
+		@Override
 		public EngineOptions onCreateEngineOptions()
 		{
 		Log.d("-------onCreateEngineOptions()---------", " ");
@@ -76,23 +68,15 @@ public class MainActivity extends BaseGameActivity
 		Log.d("-------onCreateResources()---------", " ");
 		
 		ResourcesManager.prepareManager(mEngine, this, this.camera, getVertexBufferObjectManager());
-		resourcesManager =ResourcesManager.getInstance();
-		resourcesManager.loadSplashScene();
-		sceneManager = SceneManager.getInstance();
-
-//		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-//		        splashTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 640, 300, TextureOptions.DEFAULT);
-//		        splashTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(splashTextureAtlas, this, "splash.png", 0, 0);
-//		        splashTextureAtlas.load();
-//		     
+		ResourcesManager.getInstance().loadSplashScene();
 		        pOnCreateResourcesCallback.onCreateResourcesFinished();
 		}
 
 		public void onCreateScene(OnCreateSceneCallback pOnCreateSceneCallback) throws Exception
 		{
 		Log.d("-------onCreateScene()---------", " ");
-		sceneManager.setCurrentScene(ConstantsList.SceneType.SPLASH);
-		        pOnCreateSceneCallback.onCreateSceneFinished(this.splashScene);
+		
+		SceneManager.getInstance().createSplashScene(pOnCreateSceneCallback);
 		}
 
 		public void onPopulateScene(Scene pScene, OnPopulateSceneCallback pOnPopulateSceneCallback) throws Exception
@@ -103,54 +87,34 @@ public class MainActivity extends BaseGameActivity
 
 					public void onTimePassed(TimerHandler pTimerHandler) {
 				  		  	mEngine.unregisterUpdateHandler(pTimerHandler);
-			                loadResources();
-			                loadScenes();        
-			                splash.detachSelf();
-			                splash.dispose();
-			                sceneManager.setCurrentScene(ConstantsList.SceneType.MENU);
-			   			
+			               SceneManager.getInstance().createMenuScene();
+			                
 					}
 		}));
 		 
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
 		}
 
-		public void loadResources()
-		{
-		Log.d("-------loadResources()()---------", " ");
-		// Load your game resources here!
-		sceneManager.loadGameSceneResources();
-		}
-
-		private void loadScenes()
-		{
-		Log.d("-------loadScenes()---------", " ");
-				sceneManager.createGameScenes();
-		}
-
-		
-		
-		// ===========================================================
-		// INITIALIZE
-		// ===========================================================
-
-		private void initSplashScene()
-		{
-		Log.d("-------initSplashScene()---------", " ");
-		    splashScene = new Scene();
-		    splash = new Sprite(0, 0, splashTextureRegion, mEngine.getVertexBufferObjectManager())
+				
+		@Override
+		public boolean onKeyDown(int keyCode, KeyEvent event) 
+		{  
+		    if (keyCode == KeyEvent.KEYCODE_BACK)
 		    {
-		    @Override
-		            protected void preDraw(GLState pGLState, Camera pCamera)
-		    {
-		                super.preDraw(pGLState, pCamera);
-		                pGLState.enableDither();
-		            }
-		    };
-		   
-		    splash.setPosition((ConstantsList.CAMERA_WIDTH - splash.getWidth()) * 0.5f, (ConstantsList.CAMERA_HEIGHT - splash.getHeight()) * 0.5f);
-		    splashScene.attachChild(splash);
+		       if(SceneManager.getInstance().getCurrentScene().getSceneType().equals(SceneType.MENU))
+		    	   onDestroy();
+		       else
+		    	   SceneManager.getInstance().getCurrentScene().onBackKeyPressed();
+		    }
+		    return false; 
 		}
-		
 
-	}
+		@Override
+		protected void onDestroy()
+		{
+		    super.onDestroy();
+		    System.exit(0);
+		}
+
+		
+}
