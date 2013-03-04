@@ -31,7 +31,7 @@ public class Enemy extends GameObject {
 	@Override
 	public void move() {
 		this.mPhysicsHandler.setVelocityX(this.speed);	
-		OutofScreenX();
+		//OutofScreenX();
 	}
 
 	public void animation(int frameDuration) {
@@ -46,6 +46,7 @@ public class Enemy extends GameObject {
 			Random rand = new Random();
 			int b=rand.nextInt(420);
 			this.setY(b); 
+			
 		}
 		else if(mX<0)
 		{	mX=ConstantsList.CAMERA_WIDTH;

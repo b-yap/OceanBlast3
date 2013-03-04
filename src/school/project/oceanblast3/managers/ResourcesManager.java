@@ -109,7 +109,9 @@ public class ResourcesManager {
 	/******************** PAUSECENE RESOURCES **********************/
 		
 		private BitmapTextureAtlas pause_pausedAtlas;
-		public TextureRegion pause_btnPausedRegion;
+		public TextureRegion pause_btnResumeRegion;
+		public TextureRegion pause_btnMenuRegion;
+		public TextureRegion pause_btnHolderRegion;
 		
 		
 	/******************** LOGIC AREA **********************************/
@@ -119,7 +121,7 @@ public class ResourcesManager {
 	private void loadFontResources(){
 		FontFactory.setAssetBasePath("font/");
 	    final ITexture mainFontTexture = new BitmapTextureAtlas(activity.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-	    font = FontFactory.createStrokeFromAsset(activity.getFontManager(), mainFontTexture, activity.getAssets(), "BASKVILL.TTF", 50, true, Color.WHITE, 2, Color.BLACK);
+	    font = FontFactory.createStrokeFromAsset(activity.getFontManager(), mainFontTexture, activity.getAssets(), "BASKVILL.TTF", 40, true, Color.WHITE, 2, Color.BLACK);
 	    font.load();
 
 	}
@@ -128,9 +130,13 @@ public class ResourcesManager {
 	
 	public void loadPauseResources(){
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-		pause_pausedAtlas = new BitmapTextureAtlas(activity.getTextureManager(), 200, 50, TextureOptions.DEFAULT);
-		pause_btnPausedRegion = BitmapTextureAtlasTextureRegionFactory		
-			    .createFromAsset(pause_pausedAtlas, activity, "paused.png",0, 0);
+		pause_pausedAtlas = new BitmapTextureAtlas(activity.getTextureManager(), 506, 530, TextureOptions.DEFAULT);
+		pause_btnResumeRegion = BitmapTextureAtlasTextureRegionFactory		
+			    .createFromAsset(pause_pausedAtlas, activity, "resume.png",0, 0);
+		pause_btnMenuRegion = BitmapTextureAtlasTextureRegionFactory		
+			    .createFromAsset(pause_pausedAtlas, activity, "goToMenu.png",0,50);
+		pause_btnHolderRegion = BitmapTextureAtlasTextureRegionFactory		
+			    .createFromAsset(pause_pausedAtlas, activity, "message_box.png",0,100);
 		pause_pausedAtlas.load();
 	
 	}
@@ -210,13 +216,13 @@ public class ResourcesManager {
 			game_autoParallaxAtlas.load();	
 		
 			
-			//player: submarine	
+			//objects	
 			game_objectAtlas 		= new BitmapTextureAtlas(activity.getTextureManager(),200,200);
 				game_playerRegion 	= BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.game_objectAtlas,
 						activity,"submarine.png",0,0,1,1);
 				game_pelletRegion 	=BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.game_objectAtlas,
-						activity,"pellet.png",0,118);
-				game_objectAtlas.load();
+						activity,"missile.png",0,118);
+			game_objectAtlas.load();
 			
 			//analog controls
 			game_analogControl.loadAnalogControlResources();	
@@ -259,9 +265,14 @@ public class ResourcesManager {
 	 
 	 public void unloadGameScene()
 	 {
-	     // TODO (Since we did not create any textures for game scene yet)
+		 game_autoParallaxAtlas.unload();
+		 game_objectAtlas.unload();
+		 game_pauseAtlas.unload();
+		game_btnAtlas.unload();
+		game_enemyAtlas.unload();
+			
+			
 	 }
-	 
 	 
 	 /* SPLASH SCENE AREA */
 	 
@@ -278,7 +289,6 @@ public class ResourcesManager {
 	 }
 	 
 
-	 
 	 public static void prepareManager(Engine engine, BaseGameActivity activity, Camera camera,
 			 VertexBufferObjectManager vbom){
 		getInstance().engine = engine;

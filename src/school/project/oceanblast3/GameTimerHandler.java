@@ -22,6 +22,9 @@ public class GameTimerHandler extends TimerHandler {
 	  super(pTimerSeconds, pAutoReset, pTimerCallback);
 	 }
 	  
+	 public GameTimerHandler (float pTimerSeconds, ITimerCallback pTimerCallback){
+		 super(pTimerSeconds, pTimerCallback);
+	 }
 	 public void pause() {
 	  this.mPause = true;
 	 }

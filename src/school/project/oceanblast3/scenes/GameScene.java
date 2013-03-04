@@ -10,16 +10,31 @@
 
 package school.project.oceanblast3.scenes;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Random;
+
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.handler.physics.PhysicsHandler;
+import org.andengine.engine.handler.timer.ITimerCallback;
+import org.andengine.engine.handler.timer.TimerHandler;
+import org.andengine.entity.IEntity;
+import org.andengine.entity.modifier.DelayModifier;
+import org.andengine.entity.modifier.MoveModifier;
+import org.andengine.entity.modifier.MoveXModifier;
+import org.andengine.entity.scene.IOnSceneTouchListener;
+import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.AutoParallaxBackground;
 import org.andengine.entity.scene.background.ParallaxBackground.ParallaxEntity;
+import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.ButtonSprite;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.sprite.ButtonSprite.OnClickListener;
 import org.andengine.entity.text.Text;
+import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.Font;
+import org.andengine.util.modifier.IModifier;
 
 import android.opengl.GLES20;
 import android.util.Log;
@@ -29,49 +44,45 @@ import school.project.oceanblast3.ConstantsList.SceneType;
 import school.project.oceanblast3.managers.SceneManager;
 import school.project.oceanblast3.objects.Enemy;
 
-public class GameScene extends BaseScene {
+public class GameScene extends BaseScene implements IOnSceneTouchListener{
 
 	private int mScore=0;
-	
-	
 	private Sprite userPlayer;
 	private ButtonSprite pauseButton;
 	private Enemy goldfish;
+	private LinkedList TargetsToBeAdded;
+	private LinkedList targetLL; 
+	private LinkedList projectileLL;
+	private LinkedList projectilesToBeAdded;
 	private Text scoreText;
+	private Text pelletSupplyText;
 	private Font mFont;
 	private PhysicsHandler physicsHandler;
 	private BaseScene mScene;
-			
+	private int loopEnemies=0;
+	
+	
 	
 	@Override
 	public void createScene() {
 		this.mScene = this;	
-		
+		TargetsToBeAdded = new LinkedList();
+		targetLL = new LinkedList();
+		projectilesToBeAdded = new LinkedList();
+		projectileLL = new LinkedList();
 		createBackground();
 		createGameObjects();
 		createButtons();
 		resourcesManager.game_analogControl.setPlayerPhysicsHandler(userPlayer, physicsHandler);
 		resourcesManager.game_analogControl.setAnalogControl();
 		
-			this.registerUpdateHandler(new IUpdateHandler() {
-				public void reset() { }
 
-				public void onUpdate(final float pSecondsElapsed) {
-					if(userPlayer.collidesWith(goldfish)) {
-						Log.d("gameOver!", " ");
-					}else{}
-					if(!camera.isRectangularShapeVisible(userPlayer)) {
-						//nothing
-					}
-				}
-			});
-
-
-	}
+			setOnSceneTouchListener(this);
+	 }
 
 	@Override
 	public void onBackKeyPressed() {
-		SceneManager.getInstance().loadMenuScene();
+		SceneManager.getInstance().setCurrentScene(SceneType.PAUSE);
 		
 	}
 
@@ -85,7 +96,6 @@ public class GameScene extends BaseScene {
 	public void disposeScene() {
 		
 	}
-	
 	
 	private void createBackground(){
 	
@@ -113,20 +123,82 @@ public class GameScene extends BaseScene {
 		 this.physicsHandler = new PhysicsHandler(userPlayer);
 		 userPlayer.registerUpdateHandler(physicsHandler);
 		 this.attachChild(userPlayer);
-		 this.userPlayer = userPlayer;
-		
-		//enemy
-	    goldfish = new Enemy(650,50,resourcesManager.game_enemyGoldfishRegion,vboManager,-100);
-		goldfish.animation(200);
-		final PhysicsHandler physicsHand = new PhysicsHandler(goldfish);
-		goldfish.registerUpdateHandler(physicsHand);
-		this.attachChild(goldfish);
-					
+		 this.userPlayer = userPlayer; 
+		 
+		 createSpriteSpawnTimeHandler();
+		 
+		 IUpdateHandler detect = new IUpdateHandler() {
+			    @Override
+			    public void reset() {
+			    }
+
+			    @Override
+			    public void onUpdate(float pSecondsElapsed) {
+
+			        Iterator<Sprite> targets = targetLL.iterator();
+			        Sprite _target;
+			        boolean hit = false;
+
+			        while (targets.hasNext()) {
+			            _target = targets.next();
+
+			            if (_target.getX() <= -_target.getWidth()) {
+			                removeSprite(_target, targets);
+			                break;
+			            }
+			            Iterator<Sprite> projectiles = projectileLL.iterator();
+			            Sprite _projectile;
+			            while (projectiles.hasNext()) {
+			                _projectile = projectiles.next();
+
+			                if (_projectile.getX() >= camera.getWidth()
+			                    || _projectile.getY() >= camera.getHeight()
+			                    + _projectile.getHeight()
+			                    || _projectile.getY() <= -_projectile.getHeight()) {
+			                        removeSprite(_projectile, projectiles);
+			                        continue;
+			                }
+
+			                if (_target.collidesWith(_projectile)) {
+			                    removeSprite(_projectile, projectiles);
+			                    hit = true;
+			                    scoreText.setText("Score: " + (++mScore));
+			                    break;
+			                }
+			                
+			                if(_target.collidesWith(userPlayer)){
+			                	hit = true;
+			                	removeSprite(userPlayer);
+			                	SceneManager.getInstance().setCurrentScene(SceneType.PAUSE);
+			                }
+			            }
+
+			            if (hit) {
+			                removeSprite(_target, targets);
+			                
+			                hit = false;
+			            }
+
+			        }
+			        projectileLL.addAll(projectilesToBeAdded);
+			        projectilesToBeAdded.clear();
+
+			        targetLL.addAll(TargetsToBeAdded);
+			        TargetsToBeAdded.clear();
+			    }
+			};
+
+
+
+		 
+		 		  
 		this.scoreText = new Text(5, 5, resourcesManager.font, "Score: 0", "Score: XXXX".length(), vboManager);
+		
 		this.scoreText.setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 		this.scoreText.setAlpha(0.5f);
 		this.attachChild(this.scoreText);
-			
+		
+		this.registerUpdateHandler(detect);
 	}
 	
 	private void createButtons(){
@@ -145,83 +217,113 @@ public class GameScene extends BaseScene {
 		 this.registerTouchArea(pauseButton);
 		 this.setTouchAreaBindingOnActionDownEnabled(true);
 		 this.attachChild(pauseButton);
-		 
-		pelletShooting();	
+		}
+	
+	
+	private void createSpriteSpawnTimeHandler() {
+	    TimerHandler spriteTimerHandler;
+	    float mEffectSpawnDelay = 3f;
+
+	    spriteTimerHandler = new TimerHandler(mEffectSpawnDelay, true,
+	    new ITimerCallback() {
+
+	        @Override
+	        public void onTimePassed(TimerHandler pTimerHandler) {
+	            addTarget();
+	        }
+	    });
+
+	    engine.registerUpdateHandler(spriteTimerHandler);
 	}
 	
-	private void pelletShooting(){
-		// shoot pellet listener
-	
-		
-		OnClickListener shootListener = new OnClickListener() {
-			
-			public void onClick(ButtonSprite pButtonSprite, float pTouchAreaLocalX,
-					float pTouchAreaLocalY) {
-				//the pellet
-				final Sprite pellet = new Sprite(userPlayer.getX()+100, userPlayer.getY()+50,resourcesManager.game_pelletRegion,vboManager);
-			
-				PhysicsHandler pelletHandler = new PhysicsHandler(pellet);
-				pelletHandler.setVelocityX(100);
-				pellet.registerUpdateHandler(pelletHandler);
-				mScene.attachChild(pellet);
-				
-				mScene.registerUpdateHandler(new IUpdateHandler() {
-					public void reset() { 
-											}
+	public void addTarget() {
+	    Random rand = new Random();
 
-					public void onUpdate(final float pSecondsElapsed) {							
-						if(pellet.collidesWith(goldfish)){
-							mScore++;
-							
-							scoreText.setText("Score: " + mScore);
-							activity.runOnUpdateThread(new Runnable(){
+	    int x = (int) camera.getWidth() + (int) resourcesManager.game_enemyGoldfishRegion.getWidth();
+	    int minY =(int) resourcesManager.game_enemyGoldfishRegion.getHeight();
+	    int maxY = (int) (camera.getHeight() -(int) resourcesManager.game_enemyGoldfishRegion.getHeight());
+	    int rangeY = maxY - minY;
+	    int y = rand.nextInt(rangeY) + minY;
 
-								@Override
-								public void run() {
-									mScene.detachChild(pellet);
-									pellet.setVisible(false);
-									mScene.detachChild(goldfish);
-									goldfish = null;
-									Log.d("hit!", " ");
-									scoreText.setIgnoreUpdate(true);
-																				
-									
-								}
-								
-							});	 
-							
-							//pellet.dispose();
-//								//pellet.detachSelf();
-//								//pellet = null;
-//								mScene.detachChild(pellet);
-//								pellet.setIgnoreUpdate(true);
-//								pellet.clearEntityModifiers();
-//								pellet.clearUpdateHandlers();				
-						}
-						if(pellet.getX()>700){
-							activity.runOnUpdateThread(new Runnable(){
+	    AnimatedSprite target = new AnimatedSprite(x, y, resourcesManager.game_enemyGoldfishRegion.deepCopy(), vboManager);
+	   target.animate(200);
+	    this.attachChild(target);
 
-								@Override
-								public void run() {
-									mScene.detachChild(pellet);
-									
-								}
-								
-							});	 
-						}
-					}
-									
-				});					
-			}
-		};
-		
-		//the shoot button
-		final Sprite fire = new ButtonSprite(700, 420, resourcesManager.game_btnShootRegion, 
-				resourcesManager.game_btnShootPushedRegion, vboManager,shootListener);
-		mScene.registerTouchArea(fire);
-		mScene.attachChild(fire);
-		mScene.setTouchAreaBindingOnActionDownEnabled(true);
+	    int minDuration = 2;
+	    int maxDuration = 4;
+	    int rangeDuration = maxDuration - minDuration;
+	    int actualDuration = rand.nextInt(rangeDuration) + minDuration;
+
+	    MoveXModifier mod = new MoveXModifier(actualDuration, target.getX(),
+	        -target.getWidth());
+	    target.registerEntityModifier(mod.deepCopy());
+
+	    TargetsToBeAdded.add(target);
+
 	}
 	
+	private void removeSprite(final Sprite _sprite, Iterator it) {
+	    activity.runOnUpdateThread(new Runnable() {
+
+	        @Override
+	        public void run() {
+	            mScene.detachChild(_sprite);
+	        }
+	    });
+	    it.remove();
+	}
+	
+	private void removeSprite(final Sprite _sprite) {
+	    activity.runOnUpdateThread(new Runnable() {
+
+	        @Override
+	        public void run() {
+	            mScene.detachChild(_sprite);
+	        }
+	    });
+	}
+	
+	private void shootProjectile(final float pX, final float pY) {
+
+		
+		int offX = (int) (pX - userPlayer.getX());
+	    int offY = (int) (pY - userPlayer.getY());
+	    if (offX <= 0)
+	        return;
+
+	    final Sprite projectile;
+	    projectile = new Sprite(userPlayer.getX()+100, userPlayer.getY()+50,
+	    resourcesManager.game_pelletRegion.deepCopy(), vboManager);
+	    this.attachChild(projectile);
+
+	    int realX = (int) (camera.getWidth() + projectile.getWidth() / 2.0f);
+	    float ratio = (float) offY / (float) offX;
+	    int realY = (int) ((realX * ratio) + projectile.getY());
+
+	    int offRealX = (int) (realX - projectile.getX());
+	    int offRealY = (int) (realY - projectile.getY());
+	    float length = (float) Math.sqrt((offRealX * offRealX)
+	        + (offRealY * offRealY));
+	    float velocity = 480.0f / 1.0f; // 480 pixels / 1 sec
+	    float realMoveDuration = length / velocity;
+
+	    MoveModifier mod = new MoveModifier(realMoveDuration,
+	    projectile.getX(), realX, projectile.getY(), realY);
+	    projectile.registerEntityModifier(mod.deepCopy());
+
+	    projectilesToBeAdded.add(projectile);
+	}
+
+	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
+
+	    if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_DOWN) {
+	        final float touchX = pSceneTouchEvent.getX();
+	        final float touchY = pSceneTouchEvent.getY();
+	        shootProjectile(touchX, touchY);
+	        return true;
+	    }
+	    return false;
+	}
+
 
 }

@@ -21,7 +21,8 @@ public class ConstantsList {
 		GAME,
 		SCORE,
 		PAUSE,
-		LOADING
+		LOADING,
+		GAMEOVER
 	}
 	
 }

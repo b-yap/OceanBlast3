@@ -11,6 +11,7 @@
 package school.project.oceanblast3.managers;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
@@ -47,7 +48,6 @@ public class SceneManager implements ILoaderObserver {
 	private ArrayList<IObserver> observers= new ArrayList<IObserver>();
 	private IObserver scoreObserver; 
 	
-
 	//scenes
 	private BaseScene splashScene;
 	private BaseScene menuScene;
@@ -56,12 +56,12 @@ public class SceneManager implements ILoaderObserver {
 	private BaseScene loadingScene;
 	private BaseScene currentScene;
 	
-	
+	public int num_of_enemies;
+	public int speed;
+	public int counter=0;
 
-//	public SceneManager() {
-//		menuScreen = new MenuScene();
-//		gameScreen = new GameScene();
-//		pauseScreen = new PauseScene();	
+
+//	public SceneManager() {;	
 //		this.scoreObserver = new ScoreObserver(mainActivity);
 //		registerObserver(this.scoreObserver);		
 //	}
@@ -137,8 +137,6 @@ public class SceneManager implements ILoaderObserver {
 		return INSTANCE;
 	}
 	
-	
-	
 	public void createSplashScene(OnCreateSceneCallback pOnCreateSceneCallback){
 		splashScene = new SplashScene();
 		currentScene =splashScene;
@@ -175,6 +173,8 @@ public class SceneManager implements ILoaderObserver {
 	            engine.unregisterUpdateHandler(pTimerHandler);
 	            ResourcesManager.getInstance().loadGameResources();
 	            ResourcesManager.getInstance().loadPauseResources();
+	                     
+	            chooseLevel((new Random()).nextInt(5));
 	            gameScene = new GameScene();
 	            pauseScene = new PauseScene();
 	            setCurrentScene(SceneType.GAME);
@@ -198,6 +198,20 @@ public class SceneManager implements ILoaderObserver {
 	    }));
 	}
 	
+	
+	/********************* CHOOSE LEVEL *************************************/
+	 
+	public void chooseLevel(int level){
+		 counter++;
+		 switch(level){		 
+		 case 1: num_of_enemies =3; speed= -150; break;
+		 case 2: num_of_enemies =4; speed= -200; break;
+		 case 3: num_of_enemies =5; speed= -200; break;
+		 case 4: num_of_enemies =6; speed= -300; break;
+		 default: num_of_enemies = 8; speed= -300; break; 
+		 }
+	 }
+
 
 }
 

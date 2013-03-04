@@ -12,19 +12,23 @@ package school.project.oceanblast3.scenes;
 
 import org.andengine.entity.scene.CameraScene;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.text.Text;
 import org.andengine.entity.util.FPSLogger;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.TextureRegion;
 
+import android.opengl.GLES20;
 import android.util.Log;
 
 import school.project.oceanblast3.ConstantsList;
 import school.project.oceanblast3.ConstantsList.SceneType;
 import school.project.oceanblast3.managers.SceneManager;
 
-public class PauseScene extends BaseScene {
+public class GameOverScene extends BaseScene {
 
 	private int buttonChoice=1;
+	private Text endGameText;
+	
 	@Override
 	public void createScene() {
 		engine.registerUpdateHandler(new FPSLogger());
@@ -35,19 +39,21 @@ public class PauseScene extends BaseScene {
 		
 		final Sprite messageBox = createPauseSprite(centerX, centerY,resourcesManager.pause_btnHolderRegion,0);
 		this.attachChild(messageBox);
+		  
+		endGameText = new Text((messageBox.getWidth() - resourcesManager.pause_btnResumeRegion.getWidth())/2,
+				(messageBox.getWidth()-resourcesManager.pause_btnResumeRegion.getHeight())/2, 
+				resourcesManager.font, "GAME OVER!!", "GAME OVER".length(), vboManager);
 		
-		final Sprite resumeButton = createPauseSprite((messageBox.getWidth() - resourcesManager.pause_btnResumeRegion.getWidth())/2,
-				(messageBox.getWidth()-resourcesManager.pause_btnResumeRegion.getHeight())/2-70,resourcesManager.pause_btnResumeRegion, 1);
-		this.registerTouchArea(resumeButton);
-		this.setTouchAreaBindingOnActionDownEnabled(true);
-		messageBox.attachChild(resumeButton);
+		this.endGameText.setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		this.endGameText.setAlpha(0.5f);
+		this.attachChild(this.endGameText);
 		
 		final Sprite menuButton = createPauseSprite((messageBox.getWidth() - resourcesManager.pause_btnResumeRegion.getWidth())/2,
-				(messageBox.getWidth()-resourcesManager.pause_btnResumeRegion.getHeight())/2-10,resourcesManager.pause_btnMenuRegion, 2);
+				(messageBox.getWidth()-resourcesManager.pause_btnResumeRegion.getHeight())/2+50,resourcesManager.pause_btnMenuRegion, 2);
 		this.registerTouchArea(menuButton);
 		this.setTouchAreaBindingOnActionDownEnabled(true);
 		messageBox.attachChild(menuButton);
-		/* Makes the paused Game look through. */
+			
 		this.setBackgroundEnabled(false);
 		
 		
@@ -62,7 +68,7 @@ public class PauseScene extends BaseScene {
 	@Override
 	public SceneType getSceneType() {
 		// TODO Auto-generated method stub
-		return SceneType.PAUSE;
+		return SceneType.GAMEOVER;
 	}
 
 	@Override
@@ -85,10 +91,6 @@ public class PauseScene extends BaseScene {
 							switch(pSceneTouchEvent.getAction()) {
 							case TouchEvent.ACTION_DOWN:
 								Log.d("action down on pause", " ");
-								
-								if(buttonChoice==1)
-								{	SceneManager.getInstance().setCurrentScene(SceneType.GAME);
-								}else if(buttonChoice ==2)
 									SceneManager.getInstance().loadMenuScene();
 								
 								break;
