@@ -128,11 +128,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 		 createSpriteSpawnTimeHandler();
 		 
 		 IUpdateHandler detect = new IUpdateHandler() {
-			    @Override
 			    public void reset() {
 			    }
 
-			    @Override
 			    public void onUpdate(float pSecondsElapsed) {
 
 			        Iterator<Sprite> targets = targetLL.iterator();
@@ -227,7 +225,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	    spriteTimerHandler = new TimerHandler(mEffectSpawnDelay, true,
 	    new ITimerCallback() {
 
-	        @Override
 	        public void onTimePassed(TimerHandler pTimerHandler) {
 	            addTarget();
 	        }
@@ -265,7 +262,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private void removeSprite(final Sprite _sprite, Iterator it) {
 	    activity.runOnUpdateThread(new Runnable() {
 
-	        @Override
 	        public void run() {
 	            mScene.detachChild(_sprite);
 	        }
@@ -276,8 +272,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 	private void removeSprite(final Sprite _sprite) {
 	    activity.runOnUpdateThread(new Runnable() {
 
-	        @Override
-	        public void run() {
+	         public void run() {
 	            mScene.detachChild(_sprite);
 	        }
 	    });

@@ -73,6 +73,10 @@ public class ResourcesManager {
 		public TextureRegion		menu_btnSoundRegion;
 		public TextureRegion 		menu_btnOnRegion;
 		public TextureRegion 		menu_btnOffRegion;
+		public TextureRegion 		menu_btnQuitRegion;
+		public TextureRegion		menu_btnQuitPushedRegion;
+		public TextureRegion 		menu_btnHelpRegion;
+		public TextureRegion 		menu_btnHelpPushedRegion;
 		
 		//music
 		public Music menu_music;
@@ -154,16 +158,29 @@ public class ResourcesManager {
 			
 			//background
 			menu_bgroundAtlas 				= new BitmapTextureAtlas(activity.getTextureManager(),1000,1000);
-				menu_bgroundRegion 			= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_bgroundAtlas, activity, "background.png",0,0);
+				menu_bgroundRegion 			= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_bgroundAtlas, activity, "menu_screen.png",0,0);
 			menu_bgroundAtlas.load();		
 			
 			//menu buttons
-			menu_btnAtlas					= new BitmapTextureAtlas(activity.getTextureManager(),400,435);
-				menu_btnPlayRegion			= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"playBig.png",0,0);
-				menu_btnPlayPushedRegion 	= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"playBigPushed.png",0,151);
-				menu_btnOnRegion 			= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"on.png",0,303);
-				menu_btnOffRegion 			= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"off.png",0,353);
-				menu_btnSoundRegion			= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"soundToggles.png",0,405);
+			menu_btnAtlas					= new BitmapTextureAtlas(activity.getTextureManager(),1000,1000);
+			
+			menu_btnPlayRegion 		= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"play_bubble.png",0,0);
+			menu_btnPlayPushedRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"playBigPushed.png",0,151);
+			menu_btnQuitRegion 		= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"quit_bubble.png",0,302);
+			menu_btnQuitPushedRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"playBigPushed.png",0,454);
+			menu_btnHelpRegion 		= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"help_bubble.png",0,605);
+			menu_btnHelpPushedRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"playBigPushed.png",0,700);
+			
+			
+			menu_btnOnRegion 		= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"on.png",0,751);
+			menu_btnOffRegion		= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"off.png",0,802);
+			menu_btnSoundRegion		= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"soundToggles.png",0,900);
+			
+	//			menu_btnPlayRegion			= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"playBig.png",0,0);
+	//			menu_btnPlayPushedRegion 	= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"playBigPushed.png",0,151);
+	//			menu_btnOnRegion 			= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"on.png",0,303);
+	//			menu_btnOffRegion 			= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"off.png",0,353);
+	//			menu_btnSoundRegion			= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"soundToggles.png",0,405);
 			menu_btnAtlas.load();
 		
 		
@@ -279,7 +296,7 @@ public class ResourcesManager {
 	 public void loadSplashScene(){
 			BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 	        splashAtlas = new BitmapTextureAtlas(activity.getTextureManager(), 640, 300, TextureOptions.DEFAULT);
-	        splashRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(splashAtlas, activity, "splash.png", 0, 0);
+	        splashRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(splashAtlas, activity, "meerusa_splashscreen.png", 0, 0);
 	        splashAtlas.load();
 	 }
 	 

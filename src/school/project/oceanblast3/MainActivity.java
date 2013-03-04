@@ -38,7 +38,6 @@ public class MainActivity extends BaseGameActivity
 		private SceneManager sceneManager;
 		private ResourcesManager resourcesManager;
 		
-		@Override
 		public EngineOptions onCreateEngineOptions()
 		{
 		Log.d("-------onCreateEngineOptions()---------", " ");

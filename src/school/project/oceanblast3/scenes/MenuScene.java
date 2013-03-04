@@ -28,6 +28,8 @@ public class MenuScene extends BaseScene {
 	//sprites
 	private Sprite oBackground;
 	private Sprite playButton;
+	private Sprite quitButton;
+	private Sprite helpButton;
 	private ButtonSprite soundButton;
 	private Sprite onButton;
 	private Sprite offButton;
@@ -97,11 +99,26 @@ public class MenuScene extends BaseScene {
 		
 		
 		//menu buttons
-		playButton = new ButtonSprite((ConstantsList.CAMERA_WIDTH - resourcesManager.menu_btnPlayRegion.getWidth())/2,(ConstantsList.CAMERA_HEIGHT - resourcesManager.menu_btnPlayRegion.getHeight())/2,resourcesManager.menu_btnPlayRegion, resourcesManager.menu_btnPlayPushedRegion,
+		//playButton = new ButtonSprite((ConstantsList.CAMERA_WIDTH - resourcesManager.menu_btnPlayRegion.getWidth())/2,(ConstantsList.CAMERA_HEIGHT - resourcesManager.menu_btnPlayRegion.getHeight())/2,resourcesManager.menu_btnPlayRegion, resourcesManager.menu_btnPlayPushedRegion,
+		//resourcesManager.vboManager, playListener);		
+		
+		playButton = new ButtonSprite(300,250,resourcesManager.menu_btnPlayRegion, resourcesManager.menu_btnPlayPushedRegion,
 				resourcesManager.vboManager, playListener);		
 		this.registerTouchArea(playButton);
 		this.setTouchAreaBindingOnActionDownEnabled(true);
 		this.attachChild(playButton);
+		
+		quitButton = new ButtonSprite(530,275,resourcesManager.menu_btnQuitRegion,resourcesManager.menu_btnQuitPushedRegion,
+				resourcesManager.vboManager, playListener);		
+		this.registerTouchArea(quitButton);
+		this.setTouchAreaBindingOnActionDownEnabled(true);
+		this.attachChild(quitButton);
+		
+		helpButton = new ButtonSprite(150,290,resourcesManager.menu_btnHelpRegion,resourcesManager.menu_btnHelpPushedRegion,
+				resourcesManager.vboManager, playListener);		
+		this.registerTouchArea(helpButton);
+		this.setTouchAreaBindingOnActionDownEnabled(true);
+		this.attachChild(helpButton);
 		
 		//music
 		soundButton = new ButtonSprite(600,380,resourcesManager.menu_btnSoundRegion,resourcesManager.vboManager, musicListener);		
