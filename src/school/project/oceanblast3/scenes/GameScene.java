@@ -82,7 +82,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener{
 
 	@Override
 	public void onBackKeyPressed() {
-		SceneManager.getInstance().setCurrentScene(SceneType.PAUSE);
+		SceneManager.getInstance().loadMenuScene();
 		
 	}
 

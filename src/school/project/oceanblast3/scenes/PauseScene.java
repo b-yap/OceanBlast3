@@ -24,7 +24,7 @@ import school.project.oceanblast3.managers.SceneManager;
 
 public class PauseScene extends BaseScene {
 
-	private int buttonChoice=1;
+	private int buttonChoice;
 	@Override
 	public void createScene() {
 		engine.registerUpdateHandler(new FPSLogger());
@@ -74,6 +74,7 @@ public class PauseScene extends BaseScene {
 	 private Sprite createPauseSprite(float centerX, float centerY, TextureRegion button, int choice) {
 	    	
 		 buttonChoice =choice;
+		 
 	    	final Sprite pauseButton = new Sprite(centerX, centerY,	button,
 					activity.getVertexBufferObjectManager()) {
 	    
@@ -87,10 +88,14 @@ public class PauseScene extends BaseScene {
 								Log.d("action down on pause", " ");
 								
 								if(buttonChoice==1)
-								{	SceneManager.getInstance().setCurrentScene(SceneType.GAME);
-								}else if(buttonChoice ==2)
-									SceneManager.getInstance().loadMenuScene();
+								{	
+									System.err.println("HELLO");
+									SceneManager.getInstance().setCurrentScene(SceneType.GAME);
 								
+								}else if(buttonChoice ==2){
+									System.err.println("BUTTON2");
+									SceneManager.getInstance().loadMenuScene();
+								}
 								break;
 							case TouchEvent.ACTION_MOVE:
 								break;

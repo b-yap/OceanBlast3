@@ -97,11 +97,6 @@ public class ResourcesManager {
 		private BuildableBitmapTextureAtlas game_enemyAtlas;
 		public TiledTextureRegion game_enemyGoldfishRegion;
 				
-		//buttons
-		private BuildableBitmapTextureAtlas game_btnAtlas;
-		public ITextureRegion game_btnShootRegion;
-		public ITextureRegion game_btnShootPushedRegion;
-		
 		private BitmapTextureAtlas game_pauseAtlas;
 		public  TextureRegion game_btnPauseRegion;
 		
@@ -134,7 +129,7 @@ public class ResourcesManager {
 	
 	public void loadPauseResources(){
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-		pause_pausedAtlas = new BitmapTextureAtlas(activity.getTextureManager(), 506, 530, TextureOptions.DEFAULT);
+		pause_pausedAtlas = new BitmapTextureAtlas(activity.getTextureManager(), 506, 600, TextureOptions.DEFAULT);
 		pause_btnResumeRegion = BitmapTextureAtlasTextureRegionFactory		
 			    .createFromAsset(pause_pausedAtlas, activity, "resume.png",0, 0);
 		pause_btnMenuRegion = BitmapTextureAtlasTextureRegionFactory		
@@ -165,16 +160,16 @@ public class ResourcesManager {
 			menu_btnAtlas					= new BitmapTextureAtlas(activity.getTextureManager(),1000,1000);
 			
 			menu_btnPlayRegion 		= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"play_bubble.png",0,0);
-			menu_btnPlayPushedRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"playBigPushed.png",0,151);
-			menu_btnQuitRegion 		= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"quit_bubble.png",0,302);
-			menu_btnQuitPushedRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"playBigPushed.png",0,454);
-			menu_btnHelpRegion 		= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"help_bubble.png",0,605);
-			menu_btnHelpPushedRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"playBigPushed.png",0,700);
+			menu_btnPlayPushedRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"playBigPushed.png",0,96);
+			menu_btnQuitRegion 		= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"quit_bubble.png",0,246);
+			menu_btnQuitPushedRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"playBigPushed.png",0,354);
+			menu_btnHelpRegion 		= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"help_bubble.png",0,504);
+			menu_btnHelpPushedRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"playBigPushed.png",0,598);
 			
 			
-			menu_btnOnRegion 		= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"on.png",0,751);
-			menu_btnOffRegion		= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"off.png",0,802);
-			menu_btnSoundRegion		= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"soundToggles.png",0,900);
+			menu_btnOnRegion 		= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"on.png",0,748);
+			menu_btnOffRegion		= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"off.png",0,798);
+			menu_btnSoundRegion		= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"soundToggles.png",0,848);
 			
 	//			menu_btnPlayRegion			= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"playBig.png",0,0);
 	//			menu_btnPlayPushedRegion 	= BitmapTextureAtlasTextureRegionFactory.createFromAsset(menu_btnAtlas, activity,"playBigPushed.png",0,151);
@@ -250,16 +245,6 @@ public class ResourcesManager {
 						activity, "pause.png", 0, 0);
 			game_pauseAtlas.load();
 			
-			game_btnAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 512, 546);
-			game_btnShootRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(game_btnAtlas, activity, "face_box_tiled.png");
-			game_btnShootPushedRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(game_btnAtlas, activity, "face_circle_tiled.png");
-					
-			try {
-				game_btnAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 0));
-				game_btnAtlas.load();
-			} catch (TextureAtlasBuilderException e) {
-				Debug.e(e);
-			}
 					
 			
 			//animated sprite: enemy
@@ -285,7 +270,6 @@ public class ResourcesManager {
 		 game_autoParallaxAtlas.unload();
 		 game_objectAtlas.unload();
 		 game_pauseAtlas.unload();
-		game_btnAtlas.unload();
 		game_enemyAtlas.unload();
 			
 			
@@ -295,7 +279,7 @@ public class ResourcesManager {
 	 
 	 public void loadSplashScene(){
 			BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-	        splashAtlas = new BitmapTextureAtlas(activity.getTextureManager(), 640, 300, TextureOptions.DEFAULT);
+	        splashAtlas = new BitmapTextureAtlas(activity.getTextureManager(), 800, 480, TextureOptions.DEFAULT);
 	        splashRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(splashAtlas, activity, "meerusa_splashscreen.png", 0, 0);
 	        splashAtlas.load();
 	 }
